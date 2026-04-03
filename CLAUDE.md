@@ -6,7 +6,7 @@ Colorado benefit-program encodings live here.
 
 - Colorado administrative regulations, manuals, and guidance
 - first source: `9 CCR 2503-6` Colorado Works Program
-- keep statute companions separate under `statute/` when added later
+- keep statute companions under `statute/` and sync both trees into Atlas
 
 ## Layout
 
@@ -24,8 +24,11 @@ rac-us-co/
 
 ```bash
 cd /Users/maxghenis/TheAxiomFoundation/rac
-uv run python -m rac.validate all /Users/maxghenis/TheAxiomFoundation/rac-us-co/regulation
-uv run python -m rac.test_runner /Users/maxghenis/TheAxiomFoundation/rac-us-co/regulation -v
+uv run python -m rac.validate all /Users/maxghenis/TheAxiomFoundation/rac-us-co
+uv run python -m rac.test_runner /Users/maxghenis/TheAxiomFoundation/rac-us-co -v
+
+cd /Users/maxghenis/TheAxiomFoundation/rac-us-co
+python3 scripts/sync_atlas.py
 ```
 
 ## Encoding policy
