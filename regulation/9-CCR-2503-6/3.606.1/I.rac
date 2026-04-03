@@ -1,0 +1,44 @@
+"""
+9 CCR 2503-6
+3.606.1 Basic Cash Assistance
+I. Calculation of the Basic Cash Assistance Grant for an Eligible Assistance Unit
+
+Source note: encoded from the official current-text Colorado Works PDF snapshot
+retrieved on 2026-04-02.
+
+To calculate the basic cash assistance amount for an eligible assistance unit:
+
+1. Deduct the earned income disregard(s) from the gross earned income, received or
+expected to be received by members of the assistance unit, in the month of application;
+
+2. Add to the result from step 1, above, the unearned income received or expected to be
+received by members of the assistance unit;
+
+3. Deduct the total from step 2, above, from the grant amount for the household size.
+"""
+
+countable_gross_earned_income_after_disregards_3_606_1_i:
+    entity: TanfUnit
+    period: Month
+    dtype: Money
+
+countable_unearned_income_3_606_1_i:
+    entity: TanfUnit
+    period: Month
+    dtype: Money
+
+grant_amount_for_household_size_3_606_1_i:
+    entity: TanfUnit
+    period: Month
+    dtype: Money
+
+basic_cash_assistance_grant_amount_3_606_1_i:
+    entity: TanfUnit
+    period: Month
+    dtype: Money
+    from 2026-04-02:
+        grant_amount_for_household_size_3_606_1_i -
+        (
+            countable_gross_earned_income_after_disregards_3_606_1_i +
+            countable_unearned_income_3_606_1_i
+        )

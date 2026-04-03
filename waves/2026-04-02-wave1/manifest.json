@@ -1,0 +1,36 @@
+{
+  "wave": "2026-04-02-wave1",
+  "jurisdiction": "us-co",
+  "provenance_tier": "manual_repo_change",
+  "created_at": "2026-04-02",
+  "description": "Initial Colorado Works manual-derived seed from 9 CCR 2503-6 with official PDF snapshot, akomized AKN skeleton, clause slices, and first RAC leaves.",
+  "source_documents": [
+    {
+      "citation": "9 CCR 2503-6",
+      "title": "Colorado Works Program",
+      "snapshot_date": "2026-04-02",
+      "pdf_path": "sources/official/9-CCR-2503-6/2026-04-02/source.pdf",
+      "outline_path": "sources/official/9-CCR-2503-6/2026-04-02/outline.json",
+      "akn_path": "sources/official/9-CCR-2503-6/2026-04-02/source.akn.xml",
+      "akomize_profile": "colorado"
+    }
+  ],
+  "encoded_files": [
+    {
+      "path": "regulation/9-CCR-2503-6/3.604.2/C/3/a.rac",
+      "source_slice": "sources/slices/9-CCR-2503-6/3.604.2/C/3/a.txt"
+    },
+    {
+      "path": "regulation/9-CCR-2503-6/3.606.1/G.rac",
+      "source_slice": "sources/slices/9-CCR-2503-6/3.606.1/G.txt"
+    },
+    {
+      "path": "regulation/9-CCR-2503-6/3.606.1/H.rac",
+      "source_slice": "sources/slices/9-CCR-2503-6/3.606.1/H.txt"
+    },
+    {
+      "path": "regulation/9-CCR-2503-6/3.606.1/I.rac",
+      "source_slice": "sources/slices/9-CCR-2503-6/3.606.1/I.txt"
+    }
+  ]
+}

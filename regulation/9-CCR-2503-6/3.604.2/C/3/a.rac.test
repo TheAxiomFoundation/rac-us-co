@@ -1,0 +1,12 @@
+- name: ssi_recipient_is_excluded_from_assistance_unit
+  period: "2026-04-02"
+  input:
+    client_receives_ssi_payments_3_604_2_c_3_a: true
+  output:
+    excluded_from_assistance_unit_due_to_ssi_3_604_2_c_3_a: true
+- name: non_ssi_recipient_is_not_excluded_under_this_clause
+  period: "2026-04-02"
+  input:
+    client_receives_ssi_payments_3_604_2_c_3_a: false
+  output:
+    excluded_from_assistance_unit_due_to_ssi_3_604_2_c_3_a: false
