@@ -6,6 +6,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import xml.etree.ElementTree as ET
 from collections import defaultdict
 from datetime import UTC, datetime
 from pathlib import Path
@@ -14,12 +15,15 @@ from urllib.parse import quote
 from uuid import NAMESPACE_URL, uuid5
 
 import requests
+from bs4 import BeautifulSoup
 
 
 ROOT = Path(__file__).resolve().parents[1]
 WAVES_DIR = ROOT / "waves"
 SOURCE_ROOT = ROOT / "sources"
 ROOT_SEGMENTS = ("regulation", "statute")
+OFFICIAL_REGULATION_ROOT = SOURCE_ROOT / "official" / "9-CCR-2503-6"
+OFFICIAL_STATUTE_ROOT = SOURCE_ROOT / "official" / "statute" / "crs"
 REGULATION_PDF_URL = (
     "https://www.coloradosos.gov/CCR/GenerateRulePdf.do?fileName=9%20CCR%202503-6&ruleVersionId=11535"
 )
@@ -37,6 +41,7 @@ ROOT_LABELS = {
     "regulation": "Regulations",
     "statute": "Statutes",
 }
+AKN_NS = {"akn": "http://docs.oasis-open.org/legaldocml/ns/akn/3.0"}
 
 
 def deterministic_id(citation_path: str) -> str:
@@ -60,6 +65,282 @@ def extract_effective_date(text: str) -> str | None:
     if snapshot:
         return snapshot.group(1)
     return None
+
+
+def latest_snapshot_dir(root: Path) -> Path | None:
+    candidates = sorted(path for path in root.iterdir() if path.is_dir())
+    return candidates[-1] if candidates else None
+
+
+def local_name(tag: str) -> str:
+    return tag.rsplit("}", 1)[-1]
+
+
+def normalize_text(text: str) -> str:
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def element_text(elem: ET.Element | None) -> str | None:
+    if elem is None:
+        return None
+    text = normalize_text(" ".join(elem.itertext()))
+    return text or None
+
+
+def regulation_snapshot_paths() -> tuple[Path, Path] | None:
+    snapshot = latest_snapshot_dir(OFFICIAL_REGULATION_ROOT)
+    if snapshot is None:
+        return None
+    outline_path = snapshot / "outline.json"
+    akn_path = snapshot / "source.akn.xml"
+    if not outline_path.exists() or not akn_path.exists():
+        return None
+    return outline_path, akn_path
+
+
+def build_official_regulation_rules() -> list[dict[str, Any]]:
+    paths = regulation_snapshot_paths()
+    if paths is None:
+        return []
+    outline_path, akn_path = paths
+    outline = json.loads(outline_path.read_text())
+    akn_root = ET.fromstring(akn_path.read_text())
+    source_path = str(akn_path.relative_to(ROOT))
+
+    nodes: dict[str, dict[str, Any]] = {}
+    children_by_parent: dict[str | None, set[str]] = defaultdict(set)
+
+    root_citation = "us-co/regulation"
+    instrument_citation = "us-co/regulation/9-CCR-2503-6"
+    nodes[root_citation] = {
+        "id": deterministic_id(root_citation),
+        "jurisdiction": "us-co",
+        "doc_type": "regulation",
+        "parent_id": None,
+        "level": 0,
+        "ordinal": None,
+        "heading": ROOT_LABELS["regulation"],
+        "body": None,
+        "effective_date": None,
+        "repeal_date": None,
+        "source_url": REGULATION_PDF_URL,
+        "source_path": None,
+        "rac_path": None,
+        "has_rac": False,
+        "citation_path": root_citation,
+        "line_count": 0,
+    }
+    nodes[instrument_citation] = {
+        "id": deterministic_id(instrument_citation),
+        "jurisdiction": "us-co",
+        "doc_type": "regulation",
+        "parent_id": deterministic_id(root_citation),
+        "level": 1,
+        "ordinal": None,
+        "heading": REGULATION_TITLES["9-CCR-2503-6"],
+        "body": None,
+        "effective_date": None,
+        "repeal_date": None,
+        "source_url": REGULATION_PDF_URL,
+        "source_path": source_path,
+        "rac_path": None,
+        "has_rac": False,
+        "citation_path": instrument_citation,
+        "line_count": 0,
+    }
+    children_by_parent[None].add(root_citation)
+    children_by_parent[root_citation].add(instrument_citation)
+
+    def akn_payload(code: str) -> tuple[str | None, str | None]:
+        eid = f"sec_{code.replace('.', '_')}"
+        elem = akn_root.find(f".//*[@eId='{eid}']")
+        if elem is None:
+            return None, None
+        blocks: list[str] = []
+        num = element_text(next((child for child in elem if local_name(child.tag) == "num"), None))
+        heading = element_text(next((child for child in elem if local_name(child.tag) == "heading"), None))
+        if num:
+            blocks.append(num)
+        if heading:
+            blocks.append(heading)
+        for child in elem:
+            if local_name(child.tag) != "content":
+                continue
+            for paragraph in child.iter():
+                if local_name(paragraph.tag) != "p":
+                    continue
+                text = element_text(paragraph)
+                if text and not text.startswith("CODE OF COLORADO REGULATIONS"):
+                    blocks.append(text)
+        effective_date = None
+        for child in elem:
+            if local_name(child.tag) == "remark":
+                text = element_text(child)
+                if text:
+                    match = re.search(r"(\d{4}-\d{2}-\d{2})", text)
+                    if match:
+                        effective_date = match.group(1)
+                        break
+        if not blocks:
+            return None, effective_date
+        return "\n\n".join(blocks), effective_date
+
+    def add_outline_items(items: list[dict[str, Any]], parent_citation: str) -> None:
+        for item in items:
+            title = item.get("title", "")
+            match = re.match(r"^(\d+(?:\.\d+)+)\s+(.+)$", title)
+            if not match:
+                continue
+            code, heading = match.groups()
+            citation = f"{instrument_citation}/{code}"
+            body, effective_date = akn_payload(code)
+            nodes[citation] = {
+                "id": deterministic_id(citation),
+                "jurisdiction": "us-co",
+                "doc_type": "regulation",
+                "parent_id": deterministic_id(parent_citation),
+                "level": len(citation.split("/")) - 1,
+                "ordinal": None,
+                "heading": heading,
+                "body": body,
+                "effective_date": effective_date,
+                "repeal_date": None,
+                "source_url": REGULATION_PDF_URL,
+                "source_path": source_path,
+                "rac_path": None,
+                "has_rac": False,
+                "citation_path": citation,
+                "line_count": len(body.splitlines()) if body else 0,
+            }
+            children_by_parent[parent_citation].add(citation)
+            add_outline_items(item.get("children", []), citation)
+
+    add_outline_items(outline, instrument_citation)
+
+    for parent_citation, child_paths in children_by_parent.items():
+        sorted_paths = sorted(child_paths, key=lambda path: natural_key(path.split("/")[-1]))
+        for ordinal, child_path in enumerate(sorted_paths, start=1):
+            nodes[child_path]["ordinal"] = ordinal
+
+    return sorted(nodes.values(), key=lambda row: (row["level"], natural_key(row["citation_path"])))
+
+
+def build_official_statute_rules() -> list[dict[str, Any]]:
+    if not OFFICIAL_STATUTE_ROOT.exists():
+        return []
+
+    nodes: dict[str, dict[str, Any]] = {}
+    children_by_parent: dict[str | None, set[str]] = defaultdict(set)
+
+    root_citation = "us-co/statute"
+    collection_citation = "us-co/statute/crs"
+    nodes[root_citation] = {
+        "id": deterministic_id(root_citation),
+        "jurisdiction": "us-co",
+        "doc_type": "statute",
+        "parent_id": None,
+        "level": 0,
+        "ordinal": None,
+        "heading": ROOT_LABELS["statute"],
+        "body": None,
+        "effective_date": None,
+        "repeal_date": None,
+        "source_url": None,
+        "source_path": None,
+        "rac_path": None,
+        "has_rac": False,
+        "citation_path": root_citation,
+        "line_count": 0,
+    }
+    nodes[collection_citation] = {
+        "id": deterministic_id(collection_citation),
+        "jurisdiction": "us-co",
+        "doc_type": "statute",
+        "parent_id": deterministic_id(root_citation),
+        "level": 1,
+        "ordinal": None,
+        "heading": STATUTE_COLLECTION_TITLES["crs"],
+        "body": None,
+        "effective_date": None,
+        "repeal_date": None,
+        "source_url": None,
+        "source_path": None,
+        "rac_path": None,
+        "has_rac": False,
+        "citation_path": collection_citation,
+        "line_count": 0,
+    }
+    children_by_parent[None].add(root_citation)
+    children_by_parent[root_citation].add(collection_citation)
+
+    for section_dir in sorted(OFFICIAL_STATUTE_ROOT.iterdir(), key=lambda path: natural_key(path.name)):
+        if not section_dir.is_dir():
+            continue
+        snapshot_dir = latest_snapshot_dir(section_dir)
+        if snapshot_dir is None:
+            continue
+        source_html = snapshot_dir / "source.html"
+        if not source_html.exists():
+            continue
+        soup = BeautifulSoup(source_html.read_text(), "html.parser")
+        canonical = soup.find("link", rel="canonical")
+        source_url = canonical["href"] if canonical and canonical.get("href") else f"https://colorado.public.law/statutes/crs_{section_dir.name}"
+        h1 = soup.find("h1")
+        heading = section_dir.name
+        if h1:
+            heading_text = normalize_text(h1.get_text(" ", strip=True))
+            if " / " in heading_text:
+                heading = heading_text.split(" / ", 1)[1]
+            elif "–" in heading_text:
+                heading = heading_text.split("–", 1)[1].strip()
+            else:
+                heading = re.sub(r"^C\.R\.S\. Section\s+\S+\s+", "", heading_text).strip() or heading
+        if heading == section_dir.name:
+            title_tag = soup.find("title")
+            if title_tag:
+                title_text = normalize_text(title_tag.get_text(" ", strip=True))
+                if "–" in title_text:
+                    heading = title_text.split("–", 1)[1].strip()
+        blocks: list[str] = []
+        content = soup.select_one(".statute-content")
+        if content:
+            for child in content.find_all(["section", "p"], recursive=False):
+                text = normalize_text(child.get_text(" ", strip=True))
+                if text:
+                    blocks.append(text)
+        source_note = soup.select_one(".source-note") or soup.select_one("footer")
+        if source_note:
+            text = normalize_text(source_note.get_text(" ", strip=True))
+            if text:
+                blocks.append(text)
+        body = "\n\n".join(blocks) or None
+        citation = f"{collection_citation}/{section_dir.name}"
+        nodes[citation] = {
+            "id": deterministic_id(citation),
+            "jurisdiction": "us-co",
+            "doc_type": "statute",
+            "parent_id": deterministic_id(collection_citation),
+            "level": 2,
+            "ordinal": None,
+            "heading": heading,
+            "body": body,
+            "effective_date": None,
+            "repeal_date": None,
+            "source_url": source_url,
+            "source_path": str(source_html.relative_to(ROOT)),
+            "rac_path": None,
+            "has_rac": False,
+            "citation_path": citation,
+            "line_count": len(body.splitlines()) if body else 0,
+        }
+        children_by_parent[collection_citation].add(citation)
+
+    for parent_citation, child_paths in children_by_parent.items():
+        sorted_paths = sorted(child_paths, key=lambda path: natural_key(path.split("/")[-1]))
+        for ordinal, child_path in enumerate(sorted_paths, start=1):
+            nodes[child_path]["ordinal"] = ordinal
+
+    return sorted(nodes.values(), key=lambda row: (row["level"], natural_key(row["citation_path"])))
 
 
 def all_repo_rac_paths() -> list[str]:
@@ -159,7 +440,7 @@ def source_url_for_path(repo_rac_path: str) -> str | None:
     return None
 
 
-def build_rules() -> list[dict[str, Any]]:
+def build_repo_rules() -> list[dict[str, Any]]:
     nodes: dict[str, dict[str, Any]] = {}
     children_by_parent: dict[str | None, set[str]] = defaultdict(set)
 
@@ -210,6 +491,37 @@ def build_rules() -> list[dict[str, Any]]:
         sorted_paths = sorted(child_paths, key=lambda path: natural_key(path.split("/")[-1]))
         for ordinal, child_path in enumerate(sorted_paths, start=1):
             nodes[child_path]["ordinal"] = ordinal
+
+    return sorted(nodes.values(), key=lambda row: (row["level"], natural_key(row["citation_path"])))
+
+
+def merge_rules(*rule_sets: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    nodes: dict[str, dict[str, Any]] = {}
+    for rule_set in rule_sets:
+        for rule in rule_set:
+            citation_path = rule["citation_path"]
+            existing = nodes.get(citation_path)
+            if existing is None:
+                nodes[citation_path] = dict(rule)
+                continue
+            if rule.get("rac_path"):
+                for key, value in rule.items():
+                    if value is not None:
+                        existing[key] = value
+                existing["rac_path"] = rule["rac_path"]
+            else:
+                for key in ("heading", "body", "effective_date", "source_url", "source_path", "line_count"):
+                    if existing.get(key) in (None, "", 0) and rule.get(key) is not None:
+                        existing[key] = rule[key]
+            existing["has_rac"] = existing.get("has_rac", False) or rule.get("has_rac", False)
+
+    children_by_parent: dict[str | None, list[dict[str, Any]]] = defaultdict(list)
+    for node in nodes.values():
+        children_by_parent[node["parent_id"]].append(node)
+    for siblings in children_by_parent.values():
+        siblings.sort(key=lambda node: natural_key(node["citation_path"].split("/")[-1]))
+        for ordinal, node in enumerate(siblings, start=1):
+            node["ordinal"] = ordinal
 
     return sorted(nodes.values(), key=lambda row: (row["level"], natural_key(row["citation_path"])))
 
@@ -285,11 +597,7 @@ def sync_encoding_runs(rows: list[dict[str, Any]], service_key: str, supabase_ur
 
 
 def delete_managed_rules(service_key: str, supabase_url: str) -> None:
-    url = (
-        supabase_url.rstrip("/")
-        + "/rest/v1/rules?citation_path=like."
-        + quote("us-co/%", safe="")
-    )
+    url = supabase_url.rstrip("/") + "/rest/v1/rules?jurisdiction=eq.us-co"
     headers = {
         "apikey": service_key,
         "Authorization": f"Bearer {service_key}",
@@ -332,7 +640,11 @@ def main() -> int:
     if not supabase_url or not service_key:
         raise SystemExit("RAC_SUPABASE_URL and RAC_SUPABASE_SECRET_KEY are required")
 
-    rules = build_rules()
+    rules = merge_rules(
+        build_official_regulation_rules(),
+        build_official_statute_rules(),
+        build_repo_rules(),
+    )
     encodings = build_encoding_runs()
     print(f"Prepared {len(rules)} arch.rules rows")
     print(f"Prepared {len(encodings)} encoding_runs rows")

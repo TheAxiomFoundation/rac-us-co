@@ -13,6 +13,8 @@ Works Program PDF published by the Colorado Secretary of State.
 - `akomize`-generated Akoma Ntoso skeleton for that PDF
 - exact clause slices for the first encoded provisions
 - Colorado statute companion definitions under `C.R.S. § 26-2-703`
+- official Colorado Works statute source snapshots for the broader Part 7 section set
+- Atlas sync publishes the broader official Colorado Works source tree, not just encoded leaves
 - initial RAC leaves for:
   - SSI exclusion from the assistance unit
   - pregnancy allowance
@@ -42,7 +44,9 @@ rac-us-co/
 │   │   ├── source.pdf
 │   │   ├── outline.json
 │   │   └── source.akn.xml
-│   ├── official/statute/crs/26-2-703/2026-04-02/source.html
+│   ├── official/statute/crs/26-2-701/2026-04-03/source.html
+│   ├── official/statute/crs/26-2-703/2026-04-03/source.html
+│   ├── official/statute/crs/26-2-709/2026-04-03/source.html
 │   └── slices/
 │       ├── 9-CCR-2503-6/
 │       └── statute/crs/26-2-703/
@@ -50,7 +54,8 @@ rac-us-co/
 │   └── sync_atlas.py
 └── waves/
     ├── 2026-04-02-wave1/manifest.json
-    └── 2026-04-02-wave2/manifest.json
+    ├── 2026-04-02-wave2/manifest.json
+    └── 2026-04-03-wave3/manifest.json
 ```
 
 ## Commands
@@ -79,3 +84,6 @@ python3 scripts/sync_atlas.py
 - This is intentionally a narrow seed, not a full Colorado Works corpus yet.
 - The first statute companions live under `statute/crs/26-2-703/` so the manual and
   statute sides can grow together.
+- Atlas now also carries the broader official Colorado Works source tree:
+  - the `9 CCR 2503-6` regulation hierarchy from the AKN/outline source
+  - the Colorado Works Part 7 statute section set under `26-2-701` through `26-2-725`
