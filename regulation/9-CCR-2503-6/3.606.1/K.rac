@@ -1,0 +1,32 @@
+"""
+9 CCR 2503-6
+3.606.1 Basic Cash Assistance
+K. Calculation of an Eligible Assistance Unit
+
+Source note: encoded from the official current-text Colorado Works PDF snapshot
+retrieved on 2026-04-02.
+
+To calculate the basic cash assistance grant amount for an eligible assistance
+unit:
+
+1. Deduct the net countable income from the grant amount for the assistance unit;
+and,
+
+2. Drop the cents, and the remainder is the authorized grant.
+"""
+
+grant_amount_for_assistance_unit_3_606_1_k:
+    entity: TanfUnit
+    period: Month
+    dtype: Money
+
+net_countable_income_3_606_1_k:
+    entity: TanfUnit
+    period: Month
+    dtype: Money
+
+authorized_grant_amount_3_606_1_k:
+    entity: TanfUnit
+    period: Month
+    dtype: Money
+    from 2026-04-02: floor(grant_amount_for_assistance_unit_3_606_1_k - net_countable_income_3_606_1_k)

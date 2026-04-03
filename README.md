@@ -22,6 +22,12 @@ Works Program PDF published by the Colorado Secretary of State.
   - basic cash-assistance grant calculation for an eligible assistance unit
   - assistance-unit definition
   - basic-cash-assistance-grant definition
+  - earned in-kind income
+  - short-term or subsidized employment income disregard
+  - six-month certification period for eligible assistance units
+  - net-countable-income ineligibility rule
+  - authorized-grant calculation with cents dropped
+  - countable-income, income, and IRC definitions
 
 ## Structure
 
@@ -30,15 +36,24 @@ rac-us-co/
 ├── regulation/
 │   └── 9-CCR-2503-6/
 │       ├── 3.604.2/C/3/a.rac
+│       ├── 3.605.2/
+│       │   ├── A.rac
+│       │   └── C.rac
 │       └── 3.606.1/
+│           ├── E.rac
 │           ├── G.rac
 │           ├── H.rac
-│           └── I.rac
+│           ├── I.rac
+│           ├── J.rac
+│           └── K.rac
 ├── statute/
 │   └── crs/
 │       └── 26-2-703/
+│           ├── 10.5.rac
+│           ├── 12.rac
 │           ├── 2.5.rac
-│           └── 3.rac
+│           ├── 3.rac
+│           └── 5.7.rac
 ├── sources/
 │   ├── official/9-CCR-2503-6/2026-04-02/
 │   │   ├── source.pdf
@@ -55,7 +70,8 @@ rac-us-co/
 └── waves/
     ├── 2026-04-02-wave1/manifest.json
     ├── 2026-04-02-wave2/manifest.json
-    └── 2026-04-03-wave3/manifest.json
+    ├── 2026-04-03-wave3/manifest.json
+    └── 2026-04-03-wave4/manifest.json
 ```
 
 ## Commands
@@ -81,7 +97,7 @@ python3 scripts/sync_atlas.py
     RAC leaf uses that date.
   - Otherwise the leaf is anchored to the current-text source snapshot retrieved on
     `2026-04-02`.
-- This is intentionally a narrow seed, not a full Colorado Works corpus yet.
+- This is still intentionally a narrow seed, not a full Colorado Works corpus yet.
 - The first statute companions live under `statute/crs/26-2-703/` so the manual and
   statute sides can grow together.
 - Atlas now also carries the broader official Colorado Works source tree:

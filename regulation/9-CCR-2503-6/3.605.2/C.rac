@@ -1,0 +1,50 @@
+"""
+9 CCR 2503-6
+3.605.2 Earned Income
+C. Income from Short-Term Employment
+
+Source note: encoded from the official current-text Colorado Works PDF snapshot
+retrieved on 2026-04-02.
+
+Income received from short-term employment such as temporary employment (ninety
+days or less) and subsidized employment shall not be considered to determine
+eligibility as long as the client has not been terminated or has terminated the
+employment due to a fault of their own.
+"""
+
+short_term_employment_maximum_duration_days_3_605_2_c:
+    dtype: Integer
+    from 2026-04-02: 90
+
+employment_is_temporary_3_605_2_c:
+    entity: Person
+    period: Month
+    dtype: Boolean
+
+employment_is_subsidized_3_605_2_c:
+    entity: Person
+    period: Month
+    dtype: Boolean
+
+employment_duration_days_3_605_2_c:
+    entity: Person
+    period: Month
+    dtype: Integer
+
+client_was_terminated_or_terminated_due_to_client_fault_3_605_2_c:
+    entity: Person
+    period: Month
+    dtype: Boolean
+
+income_is_not_considered_for_eligibility_due_to_short_term_or_subsidized_employment_3_605_2_c:
+    entity: Person
+    period: Month
+    dtype: Boolean
+    from 2026-04-02:
+        (
+            (
+                employment_is_temporary_3_605_2_c and
+                employment_duration_days_3_605_2_c <=
+                short_term_employment_maximum_duration_days_3_605_2_c
+            ) or employment_is_subsidized_3_605_2_c
+        ) and not client_was_terminated_or_terminated_due_to_client_fault_3_605_2_c

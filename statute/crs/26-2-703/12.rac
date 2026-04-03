@@ -1,0 +1,28 @@
+"""
+C.R.S. § 26-2-703(12)
+Definitions
+
+"Individual responsibility contract" or "IRC" means the contract entered into by
+the participant and the county department pursuant to section 26-2-708.
+
+Source note: encoded from the Colorado.Public.Law HTML snapshot retrieved on
+2026-04-03.
+"""
+
+contract_is_entered_into_by_participant_and_county_department_26_2_703_12:
+    entity: Person
+    period: Month
+    dtype: Boolean
+
+contract_is_pursuant_to_section_26_2_708_26_2_703_12:
+    entity: Person
+    period: Month
+    dtype: Boolean
+
+is_individual_responsibility_contract_26_2_703_12:
+    entity: Person
+    period: Month
+    dtype: Boolean
+    from 2026-04-03:
+        contract_is_entered_into_by_participant_and_county_department_26_2_703_12 and
+        contract_is_pursuant_to_section_26_2_708_26_2_703_12

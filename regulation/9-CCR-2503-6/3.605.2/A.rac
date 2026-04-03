@@ -1,0 +1,30 @@
+"""
+9 CCR 2503-6
+3.605.2 Earned Income
+A. Earned In-kind Income
+
+Source note: encoded from the official current-text Colorado Works PDF snapshot
+retrieved on 2026-04-02.
+
+Earned in-kind income shall be income resulting from the performance of services
+by the client for which he or she is compensated in shelter or other items in lieu
+of wages.
+"""
+
+client_performs_services_3_605_2_a:
+    entity: Person
+    period: Month
+    dtype: Boolean
+
+client_is_compensated_in_shelter_or_other_items_in_lieu_of_wages_3_605_2_a:
+    entity: Person
+    period: Month
+    dtype: Boolean
+
+income_is_earned_in_kind_income_3_605_2_a:
+    entity: Person
+    period: Month
+    dtype: Boolean
+    from 2026-04-02:
+        client_performs_services_3_605_2_a and
+        client_is_compensated_in_shelter_or_other_items_in_lieu_of_wages_3_605_2_a

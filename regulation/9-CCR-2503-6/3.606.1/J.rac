@@ -1,0 +1,28 @@
+"""
+9 CCR 2503-6
+3.606.1 Basic Cash Assistance
+J. Reporting of Earned Income
+
+Source note: encoded from the official current-text Colorado Works PDF snapshot
+retrieved on 2026-04-02.
+
+If the net countable income equals or exceeds the need standard, the assistance
+unit is not eligible for Colorado Works basic cash assistance.
+"""
+
+net_countable_income_3_606_1_j:
+    entity: TanfUnit
+    period: Month
+    dtype: Money
+
+need_standard_for_household_size_3_606_1_j:
+    entity: TanfUnit
+    period: Month
+    dtype: Money
+
+assistance_unit_is_not_eligible_due_to_net_countable_income_3_606_1_j:
+    entity: TanfUnit
+    period: Month
+    dtype: Boolean
+    from 2026-04-02:
+        net_countable_income_3_606_1_j >= need_standard_for_household_size_3_606_1_j

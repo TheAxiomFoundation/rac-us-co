@@ -8,6 +8,8 @@ Colorado benefit-program encodings live here.
 - first source: `9 CCR 2503-6` Colorado Works Program
 - keep statute companions under `statute/` and sync both trees into Atlas
 - sync the broader official Colorado Works source tree into Atlas when source snapshots exist
+- current encoded scope includes earned-income, certification-period, grant-calculation,
+  assistance-unit, countable-income, income, and IRC leaves
 
 ## Layout
 
