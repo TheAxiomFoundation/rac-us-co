@@ -1,3 +1,6 @@
+imports:
+  - regulation/9-CCR-2503-6/3.606.1/F#need_standard_for_assistance_unit
+
 """
 9 CCR 2503-6
 3.606.1 Basic Cash Assistance
@@ -15,14 +18,9 @@ net_countable_income:
     period: Month
     dtype: Money
 
-need_standard_for_household_size:
-    entity: TanfUnit
-    period: Month
-    dtype: Money
-
 assistance_unit_is_not_eligible_due_to_net_countable_income:
     entity: TanfUnit
     period: Month
     dtype: Boolean
     from 2026-04-02:
-        net_countable_income >= need_standard_for_household_size
+        net_countable_income >= need_standard_for_assistance_unit

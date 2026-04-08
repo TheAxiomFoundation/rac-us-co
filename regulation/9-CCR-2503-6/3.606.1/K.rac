@@ -1,3 +1,6 @@
+imports:
+  - regulation/9-CCR-2503-6/3.606.1/I#basic_cash_assistance_grant_amount
+
 """
 9 CCR 2503-6
 3.606.1 Basic Cash Assistance
@@ -15,18 +18,8 @@ and,
 2. Drop the cents, and the remainder is the authorized grant.
 """
 
-grant_amount_for_assistance_unit:
-    entity: TanfUnit
-    period: Month
-    dtype: Money
-
-net_countable_income:
-    entity: TanfUnit
-    period: Month
-    dtype: Money
-
 authorized_grant_amount:
     entity: TanfUnit
     period: Month
     dtype: Money
-    from 2026-04-02: floor(grant_amount_for_assistance_unit - net_countable_income)
+    from 2026-04-02: floor(basic_cash_assistance_grant_amount)

@@ -1,0 +1,38 @@
+{
+  "wave": "2026-04-08-wave5",
+  "jurisdiction": "us-co",
+  "provenance_tier": "manual_repo_change",
+  "created_at": "2026-04-08",
+  "description": "Add Colorado Works standards-of-assistance chart encoding for 9 CCR 2503-6 section 3.606.1(F) and wire the existing gross-income, grant-calculation, net-income-eligibility, and authorized-grant leaves to import the chart-driven standards.",
+  "source_documents": [
+    {
+      "citation": "9 CCR 2503-6",
+      "title": "Colorado Works Program",
+      "snapshot_date": "2026-04-02",
+      "outline_path": "sources/official/9-CCR-2503-6/2026-04-02/outline.json",
+      "akn_path": "sources/official/9-CCR-2503-6/2026-04-02/source.akn.xml"
+    }
+  ],
+  "encoded_files": [
+    {
+      "path": "regulation/9-CCR-2503-6/3.606.1/F.rac",
+      "source_slice": "sources/slices/9-CCR-2503-6/3.606.1/F.txt"
+    },
+    {
+      "path": "regulation/9-CCR-2503-6/3.606.1/H.rac",
+      "source_slice": "sources/slices/9-CCR-2503-6/3.606.1/H.txt"
+    },
+    {
+      "path": "regulation/9-CCR-2503-6/3.606.1/I.rac",
+      "source_slice": "sources/slices/9-CCR-2503-6/3.606.1/I.txt"
+    },
+    {
+      "path": "regulation/9-CCR-2503-6/3.606.1/J.rac",
+      "source_slice": "sources/slices/9-CCR-2503-6/3.606.1/J.txt"
+    },
+    {
+      "path": "regulation/9-CCR-2503-6/3.606.1/K.rac",
+      "source_slice": "sources/slices/9-CCR-2503-6/3.606.1/K.txt"
+    }
+  ]
+}

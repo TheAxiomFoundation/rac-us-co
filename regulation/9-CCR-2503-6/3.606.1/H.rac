@@ -1,3 +1,6 @@
+imports:
+  - regulation/9-CCR-2503-6/3.606.1/F#need_standard_for_assistance_unit
+
 """
 9 CCR 2503-6
 3.606.1 Basic Cash Assistance
@@ -21,11 +24,6 @@ countable_unearned_income:
     period: Month
     dtype: Money
 
-need_standard_for_household_size:
-    entity: TanfUnit
-    period: Month
-    dtype: Money
-
 meets_gross_income_need_standard_test:
     entity: TanfUnit
     period: Month
@@ -33,4 +31,4 @@ meets_gross_income_need_standard_test:
     from 2026-04-02:
         countable_gross_earned_income_after_disregards +
         countable_unearned_income <=
-        need_standard_for_household_size
+        need_standard_for_assistance_unit

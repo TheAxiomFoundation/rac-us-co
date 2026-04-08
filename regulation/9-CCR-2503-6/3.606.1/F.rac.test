@@ -1,0 +1,32 @@
+- name: two_caretakers_zero_children_use_chart_base_values
+  period: "2026-04-02"
+  input:
+    number_of_children_in_assistance_unit: 0
+    number_of_caretakers_in_assistance_unit: 2
+  output:
+    need_standard_for_assistance_unit: 357
+    grant_standard_for_assistance_unit: 503
+- name: one_caretaker_two_children_use_mid_chart_values
+  period: "2026-04-02"
+  input:
+    number_of_children_in_assistance_unit: 2
+    number_of_caretakers_in_assistance_unit: 1
+  output:
+    need_standard_for_assistance_unit: 421
+    grant_standard_for_assistance_unit: 592
+- name: no_caretaker_ten_children_use_chart_ceiling_values
+  period: "2026-04-02"
+  input:
+    number_of_children_in_assistance_unit: 10
+    number_of_caretakers_in_assistance_unit: 0
+  output:
+    need_standard_for_assistance_unit: 977
+    grant_standard_for_assistance_unit: 1393
+- name: additional_children_use_increment_values
+  period: "2026-04-02"
+  input:
+    number_of_children_in_assistance_unit: 12
+    number_of_caretakers_in_assistance_unit: 2
+  output:
+    need_standard_for_assistance_unit: 1289
+    grant_standard_for_assistance_unit: 1801

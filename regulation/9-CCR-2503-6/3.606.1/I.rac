@@ -1,3 +1,6 @@
+imports:
+  - regulation/9-CCR-2503-6/3.606.1/F#grant_standard_for_assistance_unit
+
 """
 9 CCR 2503-6
 3.606.1 Basic Cash Assistance
@@ -27,17 +30,12 @@ countable_unearned_income:
     period: Month
     dtype: Money
 
-grant_amount_for_household_size:
-    entity: TanfUnit
-    period: Month
-    dtype: Money
-
 basic_cash_assistance_grant_amount:
     entity: TanfUnit
     period: Month
     dtype: Money
     from 2026-04-02:
-        grant_amount_for_household_size -
+        grant_standard_for_assistance_unit -
         (
             countable_gross_earned_income_after_disregards +
             countable_unearned_income
