@@ -1,18 +1,27 @@
-- name: authorized_grant_deducts_income_and_drops_cents
+- name: authorized_grant_drops_positive_fractional_cents
   period: "2026-04-02"
   input:
-    countable_gross_earned_income_after_disregards: 200.25
-    countable_unearned_income: 50.25
-    number_of_children_in_assistance_unit: 0
-    number_of_caretakers_in_assistance_unit: 2
-  output:
-    authorized_grant_amount: 252
-- name: authorized_grant_rounds_down_fractional_remainder
-  period: "2026-04-02"
-  input:
-    countable_gross_earned_income_after_disregards: 123.01
+    countable_gross_earned_income_after_disregards: 100.99
     countable_unearned_income: 0
-    number_of_children_in_assistance_unit: 2
+    number_of_children_in_assistance_unit: 0
     number_of_caretakers_in_assistance_unit: 1
   output:
-    authorized_grant_amount: 468
+    authorized_grant_amount: 256
+- name: authorized_grant_truncates_negative_fraction_toward_zero
+  period: "2026-04-02"
+  input:
+    countable_gross_earned_income_after_disregards: 166.25
+    countable_unearned_income: 0
+    number_of_children_in_assistance_unit: 1
+    number_of_caretakers_in_assistance_unit: 0
+  output:
+    authorized_grant_amount: -1
+- name: authorized_grant_keeps_whole_dollar_amount
+  period: "2026-04-02"
+  input:
+    countable_gross_earned_income_after_disregards: 1
+    countable_unearned_income: 0
+    number_of_children_in_assistance_unit: 1
+    number_of_caretakers_in_assistance_unit: 1
+  output:
+    authorized_grant_amount: 465

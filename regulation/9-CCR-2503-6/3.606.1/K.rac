@@ -4,7 +4,7 @@ imports:
 """
 9 CCR 2503-6
 3.606.1 Basic Cash Assistance
-K. Calculation of an Eligible Assistance Unit
+K. Calculation of the Basic Cash Assistance Grant Amount for an Eligible Assistance Unit
 
 Source note: encoded from the official current-text Colorado Works PDF snapshot
 retrieved on 2026-04-02.
@@ -22,4 +22,8 @@ authorized_grant_amount:
     entity: TanfUnit
     period: Month
     dtype: Money
-    from 2026-04-02: floor(basic_cash_assistance_grant_amount)
+    from 2026-04-02:
+        if basic_cash_assistance_grant_amount >= 0:
+            floor(basic_cash_assistance_grant_amount)
+        else:
+            ceil(basic_cash_assistance_grant_amount)
