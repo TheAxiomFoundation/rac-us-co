@@ -1,11 +1,13 @@
 # rac-us-co
 
 Colorado benefit-program RAC encodings, starting with the Colorado Works Program in
-`9 CCR 2503-6` and its immediate Colorado statute companions.
+`9 CCR 2503-6`, its immediate Colorado statute companions, and Colorado-administered
+SNAP overlays.
 
 This repo is for Colorado non-statutory benefit rules such as regulations, manuals,
-and administrative guidance. The first slice is sourced from the official Colorado
-Works Program PDF published by the Colorado Secretary of State.
+and administrative guidance. The first slices are sourced from the official Colorado
+Works Program PDF and the Colorado SNAP regulations published by the Colorado
+Secretary of State.
 
 ## Current scope
 
@@ -15,6 +17,7 @@ Works Program PDF published by the Colorado Secretary of State.
 - Colorado statute companion definitions under `C.R.S. § 26-2-703`
 - official Colorado Works statute source snapshots for the broader Part 7 section set
 - Atlas sync publishes the broader official Colorado Works source tree, not just encoded leaves
+- current-effective Colorado SNAP delegated `sets` source slices
 - initial RAC leaves for:
   - SSI exclusion from the assistance unit
   - pregnancy allowance
@@ -64,6 +67,7 @@ rac-us-co/
 │   ├── official/statute/crs/26-2-709/2026-04-03/source.html
 │   └── slices/
 │       ├── 9-CCR-2503-6/
+│       ├── cdhs/snap/current-effective/
 │       └── statute/crs/26-2-703/
 ├── scripts/
 │   ├── check_no_promoted_stubs.py
@@ -113,6 +117,8 @@ python3 scripts/sync_atlas.py
 - This is still intentionally a narrow seed, not a full Colorado Works corpus yet.
 - The first statute companions live under `statute/crs/26-2-703/` so the manual and
   statute sides can grow together.
+- Colorado-administered SNAP overlays belong here when Colorado is exercising delegated
+  federal discretion under state regulations, manuals, or agency guidance.
 - Atlas now also carries the broader official Colorado Works source tree:
   - the `9 CCR 2503-6` regulation hierarchy from the AKN/outline source
   - the Colorado Works Part 7 statute section set under `26-2-701` through `26-2-725`

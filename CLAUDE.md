@@ -6,6 +6,7 @@ Colorado benefit-program encodings live here.
 
 - Colorado administrative regulations, manuals, and guidance
 - first source: `9 CCR 2503-6` Colorado Works Program
+- Colorado-administered SNAP overlays when Colorado sets a delegated federal parameter
 - keep statute companions under `statute/` and sync both trees into Atlas
 - sync the broader official Colorado Works source tree into Atlas when source snapshots exist
 - current encoded scope includes earned-income, certification-period, grant-calculation,
@@ -46,6 +47,9 @@ python3 scripts/sync_atlas.py
   be its own variable.
 - If a rule depends on statute text, add or import the statute companion instead of
   paraphrasing it locally.
+- If Colorado is exercising delegated discretion under a federal SNAP rule, keep the
+  source slice here and use source-slice metadata to record the upstream canonical slot
+  with `relation: sets`.
 - Do not leave promoted corpus files as `status: stub`.
   - Stub only the RAC layer during generation, never the source layer.
   - Once the official source is ingested locally, encode the upstream file before promotion.
