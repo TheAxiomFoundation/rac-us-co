@@ -1,124 +1,15 @@
-# rac-us-co
+# rules-us-co
 
-Colorado benefit-program RAC encodings, starting with the Colorado Works Program in
-`9 CCR 2503-6`, its immediate Colorado statute companions, and Colorado-administered
-SNAP overlays.
+Colorado RuleSpec source registry and policy metadata.
 
-This repo is for Colorado non-statutory benefit rules such as regulations, manuals,
-and administrative guidance. The first slices are sourced from the official Colorado
-Works Program PDF and the Colorado SNAP regulations published by the Colorado
-Secretary of State.
+## Contents
 
-## Current scope
+- `sources/`: source slices, target manifests, and sidecar metadata when available.
+- `statute/`, `regulation/`, or `legislation/`: retained structured source metadata and parameter tables when available.
+- `.github/workflows/`: repository guards that keep legacy executable formula payloads out of Git.
 
-- full-source snapshot for `9 CCR 2503-6`
-- R2-backed `akomize` Akoma Ntoso skeleton metadata for that PDF
-- exact clause slices for the first encoded provisions
-- Colorado statute companion definitions under `C.R.S. § 26-2-703`
-- official Colorado Works statute source snapshots for the broader Part 7 section set
-- Atlas sync publishes the broader official Colorado Works source tree, not just encoded leaves
-- current-effective Colorado SNAP delegated `sets` source slices
-- initial RAC leaves for:
-  - SSI exclusion from the assistance unit
-  - pregnancy allowance
-  - gross-income need-standard test
-  - basic cash-assistance grant calculation for an eligible assistance unit
-  - assistance-unit definition
-  - basic-cash-assistance-grant definition
-  - earned in-kind income
-  - short-term or subsidized employment income disregard
-  - six-month certification period for eligible assistance units
-  - net-countable-income ineligibility rule
-  - authorized-grant calculation with cents dropped
-  - countable-income, income, and IRC definitions
+## Conventions
 
-## Structure
+Use RuleSpec YAML for new encoded rules. Keep source text with matching `.meta.yaml` files that record provenance and relations. Large XML or source payloads belong in object storage, with only registry or manifest metadata in Git.
 
-```text
-rac-us-co/
-├── regulation/
-│   └── 9-CCR-2503-6/
-│       ├── 3.604.2/C/3/a.rac
-│       ├── 3.605.2/
-│       │   ├── A.rac
-│       │   └── C.rac
-│       └── 3.606.1/
-│           ├── E.rac
-│           ├── G.rac
-│           ├── H.rac
-│           ├── I.rac
-│           ├── J.rac
-│           └── K.rac
-├── statute/
-│   └── crs/
-│       └── 26-2-703/
-│           ├── 10.5.rac
-│           ├── 12.rac
-│           ├── 2.5.rac
-│           ├── 3.rac
-│           └── 5.7.rac
-├── sources/
-│   ├── official/9-CCR-2503-6/2026-04-02/
-│   │   ├── source.pdf
-│   │   ├── outline.json
-│   │   └── source.akn.xml.r2.json
-│   ├── official/statute/crs/26-2-701/2026-04-03/source.html
-│   ├── official/statute/crs/26-2-703/2026-04-03/source.html
-│   ├── official/statute/crs/26-2-709/2026-04-03/source.html
-│   └── slices/
-│       ├── 9-CCR-2503-6/
-│       ├── cdhs/snap/current-effective/
-│       └── statute/crs/26-2-703/
-├── scripts/
-│   ├── check_no_promoted_stubs.py
-│   ├── sync_atlas.py
-│   └── validate_repo.py
-└── waves/
-    ├── 2026-04-02-wave1/manifest.json
-    ├── 2026-04-02-wave2/manifest.json
-    ├── 2026-04-03-wave3/manifest.json
-    └── 2026-04-03-wave4/manifest.json
-```
-
-## Commands
-
-```bash
-# Run the full repo validation bundle
-cd /Users/maxghenis/TheAxiomFoundation/rac-us-co
-python3 scripts/validate_repo.py
-
-# Validate schema and imports
-cd /Users/maxghenis/TheAxiomFoundation/rac
-uv run python -m rac.validate all /Users/maxghenis/TheAxiomFoundation/rac-us-co
-
-# Run inline tests
-cd /Users/maxghenis/TheAxiomFoundation/rac
-uv run python -m rac.test_runner /Users/maxghenis/TheAxiomFoundation/rac-us-co -v
-
-# Sync Colorado rows into Atlas/Supabase
-cd /Users/maxghenis/TheAxiomFoundation/rac-us-co
-python3 scripts/sync_atlas.py
-```
-
-## Notes
-
-- The current `from ...` dates are conservative.
-  - Where `akomize` recovered a rule-specific effective date from editor's notes, the
-    RAC leaf uses that date.
-  - Otherwise the leaf is anchored to the current-text source snapshot retrieved on
-    `2026-04-02`.
-- Symbol names are file-local.
-  - Do not repeat the local subsection or paragraph citation in variable names; the
-    file path already supplies that context when a symbol is imported.
-- Promoted corpus files should never remain `status: stub`.
-  - Stub only the RAC layer during generation, never the source layer.
-  - Once the official source is ingested locally, replace the stub with a real encoding
-    before promotion.
-- This is still intentionally a narrow seed, not a full Colorado Works corpus yet.
-- The first statute companions live under `statute/crs/26-2-703/` so the manual and
-  statute sides can grow together.
-- Colorado-administered SNAP overlays belong here when Colorado is exercising delegated
-  federal discretion under state regulations, manuals, or agency guidance.
-- Atlas now also carries the broader official Colorado Works source tree:
-  - the `9 CCR 2503-6` regulation hierarchy from the AKN/outline source
-  - the Colorado Works Part 7 statute section set under `26-2-701` through `26-2-725`
+Jurisdiction-specific materials belong in this repo. Shared federal materials belong in `rules-us`.
